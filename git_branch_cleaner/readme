@@ -1,0 +1,39 @@
+## Objective
+Simple python script to automate the deletion of remote and local git branches. No external dependencies are needed
+
+## Requirements
+1. Git. Please ensure you have git setup correcly and the corresponding access rights to delete branches
+
+## Features
+This scripts supports the deletion of either remote branches or local branches via 2 phases
+
+## Guide
+
+1. Filtering phase
+
+You can provide branch name to filter, or branch last commit dates to filter, or a mixture of name and dates to filter. 
+Please note that when filtering using date, we are using the branch's last commit date to check if it is between the provided date range.
+Filtered branches will be outputted in 'LOCAL_branches_to_delete.txt' or 'REMOTE_branches_to_delete.txt'
+
+Please note that only branches merged to master/main will be flagged out for deletion. For example
+given the following branch set up
+`
+master
+  branch-a (merged to master)
+    branch-b
+  branch-c (merged to master)
+`
+
+Since the parent branch of branch-b is already merged, all 3 branches branch-a, branch-b and branch-c will be allowed and flagged out to delete. If branch-c is not merged, then it will not be filtered out for deletion
+
+2. Deletion phase
+
+This is only possible after the first step as the script detects the presence of 'LOCAL_branches_to_delete.txt' or 'REMOTE_branches_to_delete.txt'.
+Note that all branches in the text file will be deleted. If there are any branches that you do not want to delete, you can simply remove the line from the text file.
+Successfully deleted branches will be in 'branches_successfully_deleted.txt', this is an append only text file. So if you run deletion multiple times, we will not overwrite its content.
+Failed to delete branches will be in 'branch_failed_to_delete.txt'.
+
+There are several things that you can configure in script
+1. `debug` to toggle output of debugging logs
+2. `base_branch` which refers to the main branch of your repo. This is commonly `main` or `master`
+3. `protected_branches`, these are branches that you do not want to delete. In the filtering phase, if the branch contains the patterns specified here, they will not be flagged out for deletion
